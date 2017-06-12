@@ -18,15 +18,15 @@ gulp.task('minifyJS', function(){
 });
 
 gulp.task('minifyHTML', function() {
-  return gulp.src('src/*/**.html')
+  return gulp.src(['src/**/*.html'])
     .pipe(htmlmin({collapseWhitespace: true,
-                    minifyJS: true,
-                    minifyCSS: true}))
+                    minifyCSS: true,
+                    minifyJS: true}))
     .pipe(gulp.dest('dist'));
 });
 
 gulp.task('minifyCSS', function(){
-    return gulp.src('src/*/**/***.css')
+    return gulp.src('src/**/*.css')
     .pipe(sourcemaps.init())
     .pipe(autoprefixer({
             browsers: [
@@ -48,8 +48,8 @@ gulp.task('minifyCSS', function(){
 
 // Copy and move images to build folder
 gulp.task('copyImages', function() {
-    gulp.src(['src/*/**/***.jpg',
-        'src/*/**/***.png'
+    gulp.src(['src/**/*.jpg',
+        'src/**/*.png'
         ])
         .pipe(gulp.dest('dist'));
 });
