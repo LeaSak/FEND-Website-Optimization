@@ -3,7 +3,9 @@ var gulp = require('gulp'),
     htmlmin = require('gulp-htmlmin'),
     cssnano = require('gulp-cssnano'),
     autoprefixer = require('gulp-autoprefixer'),
-    sourcemaps = require('gulp-sourcemaps');
+    sourcemaps = require('gulp-sourcemaps'),
+    imagemin = require('gulp-imagemin'),
+    size = require('gulp-size');
 
 
 
@@ -12,9 +14,9 @@ var gulp = require('gulp'),
 // });
 
 gulp.task('minifyJS', function(){
-    return gulp.src('src/js/perfmatters.js')
+    return gulp.src(['src/**/*.js'])
     .pipe(uglify())
-    .pipe(gulp.dest('dist/js/'));
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('minifyHTML', function() {
@@ -22,6 +24,7 @@ gulp.task('minifyHTML', function() {
     .pipe(htmlmin({collapseWhitespace: true,
                     minifyCSS: true,
                     minifyJS: true}))
+    .pipe(size())
     .pipe(gulp.dest('dist'));
 });
 
@@ -42,18 +45,30 @@ gulp.task('minifyCSS', function(){
             cascade: false
         }))
     .pipe(cssnano())
+    .pipe(size())
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('dist'));
 });
 
-// Copy and move images to build folder
-gulp.task('copyImages', function() {
+// Move images to build folder
+// compressed using imageMagick cli
+gulp.task('minifyImages', function() {
     gulp.src(['src/**/*.jpg',
         'src/**/*.png'
         ])
+        .pipe(imagemin())
+        .pipe(size())
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('build', ['minifyJS', 'minifyHTML', 'minifyCSS', 'copyImages']);
+gulp.task('watch', function() {
+    gulp.watch('src/**/*.js', ['minifyJS']);
+    gulp.watch('src/**/*.css', ['minifyCSS']);
+    gulp.watch('src/**/*.html', ['minifyHTML']);
+})
+
+gulp.task('build', ['minifyJS', 'minifyHTML', 'minifyCSS', 'minifyImages']);
+
+gulp.task('default', ['watch', 'build']);
 
 
