@@ -501,10 +501,12 @@ function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
 
-  var items = document.querySelectorAll('.mover');
+  var items = document.querySelectorAll('.mover'); //TODO: replace with document.getElementById.
   for (var i = 0; i < items.length; i++) {
     var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
+    //console.log(phase); // phase only has 5 values. TODO: replace complex calculation with array of five values
     items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -524,15 +526,20 @@ window.addEventListener('scroll', updatePositions);
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
-  for (var i = 0; i < 200; i++) {
-    var elem = document.createElement('img');
+  var elem; // declare elem out of loop
+  var totalPizzas = 50;
+  //console.log("width: ", screen.width, "height: ", screen.height);
+  var movingPizzasBox = document.querySelector("#movingPizzas1");
+  for (var i = 0; i < totalPizzas; i++) { // Reduced pizza number to 50 from 200.
+    elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
     elem.style.height = "100px";
     elem.style.width = "73.333px";
-    elem.basicLeft = (i % cols) * s;
+    elem.basicLeft = (i % cols) * s; // gives 0, 256, 512, 768, 1024, 1280, 1536, 1792
+    //console.log(i, i % cols, (i % cols) * s);
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
-    document.querySelector("#movingPizzas1").appendChild(elem);
+    movingPizzasBox.appendChild(elem);
   }
   updatePositions();
 });
