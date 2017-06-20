@@ -500,12 +500,41 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
+  var items = document.getElementsByClassName('mover'); // Replace with document.getElementsByClassName.
+  var totalItems = items.length; // no of pizzas
+  var scrollPosition = document.body.scrollTop / 1250;
+  var sineArray = [];
 
-  var items = document.querySelectorAll('.mover'); //TODO: replace with document.getElementById.
-  for (var i = 0; i < items.length; i++) {
-    var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
-    //console.log(phase); // phase only has 5 values. TODO: replace complex calculation with array of five values
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+  // Adopted from https://gist.github.com/anonymous/dbddbb3cbe8ff64dffd3
+  for(var j = 0; j < 5; j++){
+    //get Math.sin calculation done outside of loop
+    //gives five values only
+    sineArray.push(Math.sin(scrollPosition + j));
+  }
+  //console.log(sineArray);
+
+  // For each pizza calculate its left property
+  for (var i = 0; i < totalItems; i++) {
+    //   Because of (i % 5), only index numbers 0 to 4
+    //  * get added to the scrollPosition value.
+    //  * e.g., scrollPosition + 0, scrollPosition + 1, ...scrollPosition + 4
+    //  * Only 5 values are created and these are then
+    //  * restricted between -1 and 1 due to Math.sin()
+    //  * This calculation can be done outside of the loop!
+
+    // var phase = Math.sin(scrollPosition + (i % 5));
+
+    /* Why i % 5 ?
+     * Calculates the remainder, so e.g. 0 % 5 = 0, 1 % 5 = 1, ... 5 % 5 = 0, 6 % 5 = 1...etc
+     * This restricts the i value between 0 and 4, the
+     * length of sineArray.
+     * A value from sine Array is accessed each loop.
+     */
+    var phase = sineArray[i % 5]; // (i % 5);
+    //console.log('scroll:' + scrollPosition, 'preCalc:' + (scrollPosition + (i % 5)), 'phase:' + phase);
+    //console.log(phase); // phase only has 5 values.
+    items[i].style.left = items[i].basicLeft + 100 * phase + 'px'; //TODO: Optimise this with transform.
+    //console.log('itemNo.:' + i, 'itemstartLeft:' + items[i].basicLeft, 'itemLeftPosition:' + items[i].style.left);
 
   }
 
