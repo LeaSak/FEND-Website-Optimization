@@ -502,7 +502,7 @@ function updatePositions() {
   window.performance.mark("mark_start_frame");
   var items = document.getElementsByClassName('mover'); // Replace with document.getElementsByClassName.
   var totalItems = items.length; // no of pizzas
-  var scrollPosition = document.body.scrollTop / 1250;
+  var scrollPosition = document.body.scrollTop / 1250; // 1250 seems to effect speed?
   var sineArray = [];
 
   // Adopted from https://gist.github.com/anonymous/dbddbb3cbe8ff64dffd3
@@ -533,7 +533,8 @@ function updatePositions() {
     var phase = sineArray[i % 5]; // (i % 5);
     //console.log('scroll:' + scrollPosition, 'preCalc:' + (scrollPosition + (i % 5)), 'phase:' + phase);
     //console.log(phase); // phase only has 5 values.
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px'; //TODO: Optimise this with transform.
+    //items[i].style.left = items[i].basicLeft + 100 * phase + 'px'; //TODO: Optimise this with transform.
+    items[i].style.transform = 'translateX(' + 100 * phase + 'px)'; //TODO: Optimise this with transform.
     //console.log('itemNo.:' + i, 'itemstartLeft:' + items[i].basicLeft, 'itemLeftPosition:' + items[i].style.left);
 
   }
@@ -565,8 +566,9 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.src = "images/pizza.png";
     elem.style.height = "100px";
     elem.style.width = "73.333px";
-    elem.basicLeft = (i % cols) * s; // gives 0, 256, 512, 768, 1024, 1280, 1536, 1792
-    //console.log(i, i % cols, (i % cols) * s);
+    // elem.basicLeft = (i % cols) * s;
+    // gives 0, 256, 512, 768, 1024, 1280, 1536, 1792
+    elem.style.left = (i % cols) * s + 'px';
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     movingPizzasBox.appendChild(elem);
   }
