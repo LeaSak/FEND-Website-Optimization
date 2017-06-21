@@ -496,11 +496,13 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 // The following code for sliding background pizzas was pulled from Ilya's demo found at:
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
 
+var ticking = false;
+
 // Moves the sliding background pizzas based on scroll position
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
-  var items = document.getElementsByClassName('mover'); // Replace with document.getElementsByClassName.
+  // var items = document.getElementsByClassName('mover'); // Replace with document.getElementsByClassName.
   var totalItems = items.length; // no of pizzas
   var scrollPosition = document.body.scrollTop / 1250; // 1250 seems to effect speed?
   var sineArray = [];
@@ -547,10 +549,21 @@ function updatePositions() {
     var timesToUpdatePosition = window.performance.getEntriesByName("measure_frame_duration");
     logAverageFrame(timesToUpdatePosition);
   }
+
+  ticking = false;
+}
+
+
+// Adapted from https://www.html5rocks.com/en/tutorials/speed/animations/
+function requestTick(){
+  if(!ticking) {
+    ticking = true;
+    requestAnimationFrame(updatePositions);
+  }
 }
 
 // runs updatePositions on scroll
-window.addEventListener('scroll', updatePositions);
+window.addEventListener('scroll', requestTick);
 
 // Generates the sliding pizzas when the page loads.
 document.addEventListener('DOMContentLoaded', function() {
@@ -572,5 +585,6 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     movingPizzasBox.appendChild(elem);
   }
+  window.items = document.getElementsByClassName('mover');
   updatePositions();
 });
