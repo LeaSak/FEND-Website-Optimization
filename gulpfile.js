@@ -8,27 +8,44 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     stylish = require('jshint-stylish'),
     pump = require('pump'),
-    clean = require('gulp-clean')
+    del = require('del'),
     size = require('gulp-size');
 
 
-// Task to clean dist directory
-gulp.task('clean', function(){
-    return gulp.src('dist', {read: false})
-    .pipe(clean())
+// var errorCB = function(error){
+//     if(error){
+//         console.log('Error: ', error.toString());
+//     }
+// };
+
+// gulp.task('clean', function(){
+//     return del(['dist/']);
+// });
+
+
+// Clean tasks
+gulp.task('clean:html', function(){
+    return del(['dist/**/*.html']);
 });
 
-// Task to run JS hint
-gulp.task('jshint', ['clean'], function() {
-    return gulp.src(['src/**/*.js'])
-    .pipe(jshint())
-    .pipe(jshint.reporter('jshint-stylish'));
+gulp.task('clean:css', function(){
+    return del(['dist/**/*.css']);
 });
 
-// Minify scripts
-gulp.task('minifyJS', ['jshint', 'clean'], function(cb) {
+gulp.task('clean:js', function(){
+    return del(['dist/**/*.js']);
+});
+
+gulp.task('clean:images', function(){
+    return del(['dist/**/*.png', 'dist/**/*.jpg']);
+});
+
+// Lint and minify scripts
+gulp.task('minifyJS', ['clean:js'], function(cb) {
     pump([
             gulp.src(['src/**/*.js']),
+            jshint(),
+            jshint.reporter('jshint-stylish'),
             sourcemaps.init(),
             uglify(),
             sourcemaps.write('.'),
@@ -38,7 +55,7 @@ gulp.task('minifyJS', ['jshint', 'clean'], function(cb) {
 });
 
 // Minify HTML, inline CSS and JS
-gulp.task('minifyHTML', ['clean'], function() {
+gulp.task('minifyHTML', ['clean:html'], function() {
     return gulp.src(['src/**/*.html'])
         .pipe(htmlmin({
             collapseWhitespace: true,
@@ -49,7 +66,7 @@ gulp.task('minifyHTML', ['clean'], function() {
 });
 
 // Minify CSS
-gulp.task('minifyCSS', ['clean'], function() {
+gulp.task('minifyCSS', ['clean:css'], function() {
     return gulp.src('src/**/*.css')
         .pipe(sourcemaps.init())
         .pipe(autoprefixer({
@@ -71,20 +88,20 @@ gulp.task('minifyCSS', ['clean'], function() {
 });
 
 // Move images to build folder
-gulp.task('minifyImages', ['clean'], function() {
-    gulp.src(['src/**/*.jpg',
+gulp.task('minifyImages', ['clean:images'], function() {
+    return gulp.src(['src/**/*.jpg',
             'src/**/*.png'
         ])
         .pipe(imagemin())
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('watch', function() {
-    gulp.watch('src/**/*.js', ['jshint', 'minifyJS']);
+gulp.task('watch', ['build'], function() {
+    gulp.watch('src/**/*.js', ['minifyJS']);
     gulp.watch('src/**/*.css', ['minifyCSS']);
     gulp.watch('src/**/*.html', ['minifyHTML']);
 })
 
-gulp.task('build', ['clean','jshint', 'minifyJS', 'minifyHTML', 'minifyCSS', 'minifyImages']);
+gulp.task('build', ['minifyJS', 'minifyHTML', 'minifyCSS', 'minifyImages']);
 
-gulp.task('default', ['build', 'watch']);
+gulp.task('default', ['watch']);
