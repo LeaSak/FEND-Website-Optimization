@@ -8,20 +8,9 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     stylish = require('jshint-stylish'),
     pump = require('pump'),
-    del = require('del'),
-    size = require('gulp-size');
-
-
-// var errorCB = function(error){
-//     if(error){
-//         console.log('Error: ', error.toString());
-//     }
-// };
-
-// gulp.task('clean', function(){
-//     return del(['dist/']);
-// });
-
+    merge = require('merge-stream'),
+    concat = require('gulp-concat'),
+    del = require('del');
 
 // Clean tasks
 gulp.task('clean:html', function(){
@@ -29,11 +18,11 @@ gulp.task('clean:html', function(){
 });
 
 gulp.task('clean:css', function(){
-    return del(['dist/**/*.css']);
+    return del(['dist/**/*.css', 'dist/**/*.css.map']);
 });
 
 gulp.task('clean:js', function(){
-    return del(['dist/**/*.js']);
+    return del(['dist/**/*.js', 'dist/**/*.js.map']);
 });
 
 gulp.task('clean:images', function(){
@@ -44,9 +33,9 @@ gulp.task('clean:images', function(){
 gulp.task('minifyJS', ['clean:js'], function(cb) {
     pump([
             gulp.src(['src/**/*.js']),
+            sourcemaps.init(),
             jshint(),
             jshint.reporter('jshint-stylish'),
-            sourcemaps.init(),
             uglify(),
             sourcemaps.write('.'),
             gulp.dest('dist')
@@ -65,9 +54,10 @@ gulp.task('minifyHTML', ['clean:html'], function() {
         .pipe(gulp.dest('dist'));
 });
 
-// Minify CSS
 gulp.task('minifyCSS', ['clean:css'], function() {
-    return gulp.src('src/**/*.css')
+
+// Style for index.html
+    var print = gulp.src('src/css/print.css')
         .pipe(sourcemaps.init())
         .pipe(autoprefixer({
             browsers: [
@@ -84,7 +74,52 @@ gulp.task('minifyCSS', ['clean:css'], function() {
         }))
         .pipe(cssnano())
         .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('dist'));
+        .pipe(gulp.dest('dist/css/'));
+
+// Style for other pages
+    var app = gulp.src('src/css/*.css')
+        .pipe(sourcemaps.init())
+        .pipe(autoprefixer({
+            browsers: [
+                "Android 2.3",
+                "Android >= 4",
+                "Chrome >= 20",
+                "Firefox >= 24",
+                "Explorer >= 8",
+                "iOS >= 6",
+                "Opera >= 12",
+                "Safari >= 6"
+            ],
+            cascade: false
+        }))
+        .pipe(cssnano())
+        .pipe(concat('app.css'))
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('dist/css/'));
+
+// Pizza View CSS
+    var styles = gulp.src(['src/views/css/*.css'])
+    .pipe(sourcemaps.init())
+    .pipe(autoprefixer({
+            browsers: [
+                "Android 2.3",
+                "Android >= 4",
+                "Chrome >= 20",
+                "Firefox >= 24",
+                "Explorer >= 8",
+                "iOS >= 6",
+                "Opera >= 12",
+                "Safari >= 6"
+            ],
+            cascade: false
+        }))
+        .pipe(cssnano())
+        .pipe(concat('styles.css'))
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('dist/views/css/'));
+
+        return merge(print, app, styles);
+
 });
 
 // Move images to build folder
