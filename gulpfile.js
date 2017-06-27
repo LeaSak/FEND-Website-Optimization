@@ -1,3 +1,5 @@
+'use strict';
+
 var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     htmlmin = require('gulp-htmlmin'),
@@ -13,19 +15,19 @@ var gulp = require('gulp'),
     del = require('del');
 
 // Clean tasks
-gulp.task('clean:html', function(){
+gulp.task('clean:html', function() {
     return del(['dist/**/*.html']);
 });
 
-gulp.task('clean:css', function(){
+gulp.task('clean:css', function() {
     return del(['dist/**/*.css', 'dist/**/*.css.map']);
 });
 
-gulp.task('clean:js', function(){
+gulp.task('clean:js', function() {
     return del(['dist/**/*.js', 'dist/**/*.js.map']);
 });
 
-gulp.task('clean:images', function(){
+gulp.task('clean:images', function() {
     return del(['dist/**/*.png', 'dist/**/*.jpg']);
 });
 
@@ -56,7 +58,7 @@ gulp.task('minifyHTML', ['clean:html'], function() {
 
 gulp.task('minifyCSS', ['clean:css'], function() {
 
-// Style for index.html
+    // Style for index.html
     var print = gulp.src('src/css/print.css')
         .pipe(sourcemaps.init())
         .pipe(autoprefixer({
@@ -76,7 +78,7 @@ gulp.task('minifyCSS', ['clean:css'], function() {
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('dist/css/'));
 
-// Style for other pages
+    // Style for other pages
     var app = gulp.src('src/css/*.css')
         .pipe(sourcemaps.init())
         .pipe(autoprefixer({
@@ -97,10 +99,10 @@ gulp.task('minifyCSS', ['clean:css'], function() {
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('dist/css/'));
 
-// Pizza View CSS
+    // Pizza View CSS
     var styles = gulp.src(['src/views/css/*.css'])
-    .pipe(sourcemaps.init())
-    .pipe(autoprefixer({
+        .pipe(sourcemaps.init())
+        .pipe(autoprefixer({
             browsers: [
                 "Android 2.3",
                 "Android >= 4",
@@ -118,7 +120,7 @@ gulp.task('minifyCSS', ['clean:css'], function() {
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('dist/views/css/'));
 
-        return merge(print, app, styles);
+    return merge(print, app, styles);
 
 });
 
