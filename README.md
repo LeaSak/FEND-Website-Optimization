@@ -1,6 +1,6 @@
 ## Website Performance Optimization Portfolio Project
 
-This aim of the project was to optimize the PageSpeed Insights score for index.html and to optimize the Frames per Second in pizza.html. See the project outline [here](https://github.com/udacity/frontend-nanodegree-mobile-portfolio). This project was built using **Gulp**.
+This aim of the project was to optimize the PageSpeed Insights score for index.html and to optimize the Frames per Second in pizza.html. See the project outline [here](https://github.com/udacity/frontend-nanodegree-mobile-portfolio). An outline of the project optimizations is featured below. This project was built using **Gulp**.
 
 ### Getting started
 ------
@@ -55,3 +55,27 @@ To build the site, run the following command within your project directory:
 ```sh
 $ gulp build
 ```
+
+### Project Optimizations
+------
+
+#### Index.html
+ - Remove Google Fonts.
+ - Inline CSS (excluding print styles).
+ - Include media attribute in HTML link element to print stylesheet.
+ - Add async attribute to Google Analytics script link element.
+
+#### Views/js/main.js
+ - Use `requestAnimationFrame` for visual updates on scroll.
+ - Update pizza positions using the transform property instead of the object's left property.
+ - Move calculations, variable assignments and calls to the DOM outside of loops where possible.
+ - Replace `document.querySelector()` and `document.querySelectorAll()` with `document.getElementById()` and `document.getElementsByClassName()` respectively.
+ - Simplify function called by slider to resize pizzas.
+ - Reduce number of pizzas painted to the background.
+
+#### Other Optimizations
+ - Optimize Images.
+ - Concat and/or minify CSS.
+ - Minify HTML, JavaScript.
+ - Add will-change property to `.mover`class objects.
+
