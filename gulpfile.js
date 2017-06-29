@@ -14,111 +14,118 @@ var gulp = require('gulp'),
     concat = require('gulp-concat'),
     del = require('del');
 
+var SUPPORTED_BROWSERS = [
+    "Android 2.3",
+    "Android >= 4",
+    "Chrome >= 20",
+    "Firefox >= 24",
+    "Explorer >= 8",
+    "iOS >= 6",
+    "Opera >= 12",
+    "Safari >= 6"
+];
+
+var PATH = {
+    src: {
+        html: 'src/**/*.html',
+        css: ['src/css/*.css',
+            'src/css/**/*.css',
+            'src/css/print.css',
+            'src/views/css/*.css'
+        ],
+        js: 'src/**/*.js',
+        assets: ['src/**/*.jpg',
+            'src/**/*.png'
+        ]
+    },
+
+    dist: {
+        dist: 'dist',
+        html: 'dist/**/*.html',
+        css: ['dist/css/','dist/views/css/','dist/**/*.css', 'dist/**/*.css.map'],
+        js: ['dist/**/*.js', 'dist/**/*.js.map'],
+        assets: ['dist/**/*.png', 'dist/**/*.jpg']
+    }
+}
+
 // Clean tasks
 gulp.task('clean:html', function() {
-    return del(['dist/**/*.html']);
+    return del(PATH.dist.html);
 });
 
 gulp.task('clean:css', function() {
-    return del(['dist/**/*.css', 'dist/**/*.css.map']);
+    return del([PATH.dist.css[2], PATH.dist.css[3]]);
 });
 
 gulp.task('clean:js', function() {
-    return del(['dist/**/*.js', 'dist/**/*.js.map']);
+    return del([PATH.dist.js[0], PATH.dist.js[1]]);
 });
 
 gulp.task('clean:images', function() {
-    return del(['dist/**/*.png', 'dist/**/*.jpg']);
+    return del([PATH.dist.assets[1], PATH.dist.assets[1]]);
 });
 
 // Lint and minify scripts
 gulp.task('minifyJS', ['clean:js'], function(cb) {
     pump([
-            gulp.src(['src/**/*.js']),
+            gulp.src(PATH.src.js),
             sourcemaps.init(),
             jshint(),
             jshint.reporter('jshint-stylish'),
             uglify(),
             sourcemaps.write('.'),
-            gulp.dest('dist')
+            gulp.dest(PATH.dist.dist)
         ],
         cb);
 });
 
 // Minify HTML, inline CSS and JS
 gulp.task('minifyHTML', ['clean:html'], function() {
-    return gulp.src(['src/**/*.html'])
+    return gulp.src(PATH.src.html)
         .pipe(htmlmin({
             collapseWhitespace: true,
             minifyCSS: true,
             minifyJS: true
         }))
-        .pipe(gulp.dest('dist'));
+        .pipe(gulp.dest(PATH.dist.dist));
 });
 
 gulp.task('minifyCSS', ['clean:css'], function() {
 
     // Style for index.html
-    var print = gulp.src('src/css/print.css')
+    var print = gulp.src(PATH.src.css[2])
         .pipe(sourcemaps.init())
         .pipe(autoprefixer({
-            browsers: [
-                "Android 2.3",
-                "Android >= 4",
-                "Chrome >= 20",
-                "Firefox >= 24",
-                "Explorer >= 8",
-                "iOS >= 6",
-                "Opera >= 12",
-                "Safari >= 6"
-            ],
+            browsers: SUPPORTED_BROWSERS,
             cascade: false
         }))
         .pipe(cssnano())
         .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('dist/css/'));
+        .pipe(gulp.dest(PATH.dist.css[0]));
 
     // Style for other pages
-    var app = gulp.src('src/css/*.css')
+    var app = gulp.src(PATH.src.css[0])
         .pipe(sourcemaps.init())
         .pipe(autoprefixer({
-            browsers: [
-                "Android 2.3",
-                "Android >= 4",
-                "Chrome >= 20",
-                "Firefox >= 24",
-                "Explorer >= 8",
-                "iOS >= 6",
-                "Opera >= 12",
-                "Safari >= 6"
-            ],
+            browsers: SUPPORTED_BROWSERS,
             cascade: false
         }))
         .pipe(cssnano())
         .pipe(concat('app.css'))
         .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('dist/css/'));
+        .pipe(gulp.dest(PATH.dist.css[0]));
 
     // Pizza View CSS
-    var styles = gulp.src(['src/views/css/*.css'])
+    var styles = gulp.src(PATH.src.css[3])
         .pipe(sourcemaps.init())
         .pipe(autoprefixer({
-            browsers: [
-                "Android 2.3",
-                "Android >= 4",
-                "Chrome >= 20",
-                "Firefox >= 24",
-                "Explorer >= 8",
-                "iOS >= 6",
-                "Opera >= 12",
-                "Safari >= 6"
-            ],
+            browsers: SUPPORTED_BROWSERS,
             cascade: false
         }))
         .pipe(cssnano())
         .pipe(concat('styles.css'))
         .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('dist/views/css/'));
+        .pipe(gulp.dest(PATH.dist.css[1]));
 
     return merge(print, app, styles);
 
@@ -126,11 +133,11 @@ gulp.task('minifyCSS', ['clean:css'], function() {
 
 // Move images to build folder
 gulp.task('minifyImages', ['clean:images'], function() {
-    return gulp.src(['src/**/*.jpg',
-            'src/**/*.png'
+    return gulp.src([PATH.src.assets[0],
+            PATH.src.assets[1]
         ])
         .pipe(imagemin())
-        .pipe(gulp.dest('dist'));
+        .pipe(gulp.dest(PATH.dist.dist));
 });
 
 gulp.task('watch', ['build'], function() {
