@@ -425,7 +425,7 @@ var resizePizzas = function(size) {
 
     // Changes the value for the size of the pizza above the slider
     function changeSliderLabel(size) {
-      var pizzaSizeLabelText = document.getElementById('pizzaSize').innerHTML;
+        var pizzaSizeLabelText = document.getElementById('pizzaSize').innerHTML;
         switch (size) {
             case "1":
                 pizzaSizeLabelText = "Small";
@@ -510,12 +510,11 @@ function logAverageFrame(times) { // times is the array of User Timing measureme
 // The following code for sliding background pizzas was pulled from Ilya's demo found at:
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
 
-// Sets ticking to false
-// Ticking is used to signal when a user is scrolling
-var ticking = false;
-
 // Moves the sliding background pizzas based on scroll position
 function updatePositions() {
+    // Set to no scroll
+    ticking = false;
+
     frame++;
     window.performance.mark("mark_start_frame");
     var totalItems = items.length, // no of pizzas
@@ -547,8 +546,8 @@ function updatePositions() {
         var timesToUpdatePosition = window.performance.getEntriesByName("measure_frame_duration");
         logAverageFrame(timesToUpdatePosition);
     }
-    // Set to no scroll
-    ticking = false;
+    // // Set to no scroll
+    // ticking = false;
 }
 
 
@@ -582,5 +581,8 @@ document.addEventListener('DOMContentLoaded', function() {
         movingPizzasBox.appendChild(elem);
     }
     window.items = document.getElementsByClassName('mover');
-    updatePositions();
+    // Sets ticking to false
+    // Ticking is used to signal when a user is scrolling
+    window.ticking = false;
+    //updatePositions();
 });
