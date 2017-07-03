@@ -33,8 +33,11 @@ form {
   position: fixed;
   width: 256px;
   z-index: -1;
+  -webkit-transform: translateZ(0);
   transform: translateZ(0);
   will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .randomPizzaContainer {

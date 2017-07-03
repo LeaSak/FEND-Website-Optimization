@@ -556,7 +556,7 @@ function updatePositions() {
 function requestTick() {
     if (!ticking) {
         ticking = true;
-        requestAnimationFrame(updatePositions);
+        window.requestAnimationFrame(updatePositions);
     }
 }
 

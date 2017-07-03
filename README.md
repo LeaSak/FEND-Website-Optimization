@@ -46,7 +46,7 @@ Make sure you have **node.js**, **npm**, and **gulp** installed. For instruction
 Make sure you're in the project directory. Now we'll install the project's development dependencies.
 To install the **Gulp** dependencies, run:
 ```sh
-$ npm install.
+$ npm install
 ```
 You should now find these plugins in your node modules folder.
 
@@ -77,5 +77,5 @@ $ gulp build
  - Optimize Images.
  - Concat and/or minify CSS.
  - Minify HTML, JavaScript.
- - Add will-change property to `.mover`class objects.
+ - Add will-change and backface-visibility properties to `.mover`class objects.
 
